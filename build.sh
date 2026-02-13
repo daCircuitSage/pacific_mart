@@ -1,6 +1,5 @@
 #!/bin/bash
 set -o errexit
-set -o pipefail
 
 echo "========== BUILD STARTED =========="
 echo "Python version:"
