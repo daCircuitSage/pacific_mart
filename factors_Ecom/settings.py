@@ -28,12 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    'testserver',
-    'elda-craglike-uncolourably.ngrok-free.dev',
-]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -50,9 +45,9 @@ INSTALLED_APPS = [
     'product',
     'cart',
     'orders',
-    # 'widget_tweaks',
-    # 'cloudinary',
-    # 'cloudinary_storage',
+    'widget_tweaks',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -95,17 +90,17 @@ AUTH_USER_MODEL = 'accounts.Account'
 
 
 
-# DATABASE_URL = config('DATABASE_URL')
-# DATABASES = {
-#     'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
-# }
-
+DATABASE_URL = config('DATABASE_URL')
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 
@@ -151,15 +146,15 @@ STATICFILES_DIRS = [
     'factors_Ecom/static',
 ]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR/'media'
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = BASE_DIR/'media'
 
-# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-# CLOUDINARY_STORAGE = {
-#     'CLOUD_NAME':config('CLOUDINARY_CLOUD_NAME'),
-#     'API_KEY':config('CLOUDINARY_API_KEY'),
-#     'API_SECRET':config('CLOUDINARY_API_SECRET')
-# }
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME':config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY':config('CLOUDINARY_API_KEY'),
+    'API_SECRET':config('CLOUDINARY_API_SECRET')
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
