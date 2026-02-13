@@ -205,17 +205,28 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = not DEBUG  # HTTPS only in production
+SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_SAVE_EVERY_REQUEST = False
 
 # ===== CSRF CONFIGURATION =====
 CSRF_COOKIE_SECURE = not DEBUG  # HTTPS only in production
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_AGE = 31449600  # 1 year
+CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='').split(',') if config('CSRF_TRUSTED_ORIGINS', default='') else []
 # Add Render domain automatically if using Render
 if not DEBUG and ALLOWED_HOSTS:
     # For Render apps like 'myapp-abc123.onrender.com'
     CSRF_TRUSTED_ORIGINS.extend([f'https://{host}' for host in ALLOWED_HOSTS if 'localhost' not in host])
+
+# When running behind a proxy (like Render), Django needs to know how to
+# detect secure (HTTPS) requests. Render sets the X-Forwarded-Proto header,
+# so configure Django to trust it. This ensures request.is_secure() is True
+# and secure cookies (CSRF/session) are sent correctly.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Optionally redirect HTTP to HTTPS in production
+SECURE_SSL_REDIRECT = not DEBUG
 
 
 from django.contrib.messages import constants as messages
