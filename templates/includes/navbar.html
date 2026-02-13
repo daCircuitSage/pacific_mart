@@ -1,0 +1,306 @@
+{% load static %}
+
+<header class="site-header">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --dark: #0f172a;
+      --light: #f8fafc;
+      --border: #e5e7eb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* ===== TOP BAR ===== */
+    .top-bar {
+      background: var(--dark);
+      color: #e5e7eb;
+      font-size: 13px;
+    }
+
+    .top-bar .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 16px;
+      flex-wrap: wrap;
+    }
+
+    .top-left span {
+      margin-right: 16px;
+      cursor: pointer;
+    }
+
+    .top-right a {
+      margin-left: 16px;
+      color: #e5e7eb;
+    }
+
+    /* ===== MAIN NAV ===== */
+    .main-nav {
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .main-nav .container {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+    }
+
+    /* Logo */
+    .logo img {
+      height: 40px;
+      object-fit: contain;
+    }
+
+    /* Search */
+    .search form {
+      width: 100%;
+    }
+
+    .search-box {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 10px 12px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .search-box button {
+      background: var(--primary);
+      border: none;
+      color: #fff;
+      padding: 0 16px;
+      cursor: pointer;
+    }
+
+    /* Right widgets */
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-box small {
+      color: #6b7280;
+      display: block;
+      font-size: 12px;
+    }
+
+    .user-box a {
+      font-size: 14px;
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .cart-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+    }
+
+    .cart-btn i {
+      font-size: 16px;
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #dc2626;
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 999px;
+    }
+
+    /* Category & Store */
+    .nav-bottom {
+      background: var(--light);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-bottom .container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      flex-wrap: wrap;
+    }
+
+    .category-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .category-menu {
+      position: absolute;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-top: 6px;
+      min-width: 200px;
+      display: none;
+      z-index: 1000;
+    }
+
+    .category-menu a {
+      display: block;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: #111827;
+    }
+
+    .category-menu a:hover {
+      background: var(--light);
+    }
+
+    .store-link {
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .main-nav .container {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .nav-actions {
+        justify-content: space-between;
+      }
+    }
+  </style>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="container">
+      <div class="top-left">
+        <span>English</span>
+        <span>USD</span>
+      </div>
+      <div class="top-right">
+        <a href="#"><i class="fa fa-envelope"></i> Email</a>
+        <a href="#"><i class="fa fa-phone"></i> Call us</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN NAV -->
+  <div class="main-nav">
+    <div class="container">
+      <a href="{% url 'home' %}" class="logo">
+        <img src="{% static './images/logo.png' %}" alt="Logo">
+      </a>
+
+      <div class="search">
+        <form action="{% url 'search' %}" method="GET">
+          <div class="search-box">
+            <input
+              type="text"
+              name="keyword"
+              placeholder="Search products..."
+              value="{{ keyword }}"
+              required
+            >
+            <button type="submit">
+              <i class="fa fa-search"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="nav-actions">
+        {% if user.id is None %}
+        <div class="user-box">
+          <small>Welcome guest!</small>
+          <a href="{% url 'login' %}">Sign in</a> |
+          <a href="{% url 'register' %}">Register</a>
+        </div>
+        {% else %}
+        <div class="user-box">
+          <small>Welcome {{ user.first_name }}</small>
+          <a href="{% url 'dashboard' %}">Dashboard</a> |
+          <a href="{% url 'logout' %}">Logout</a>
+        </div>
+        {% endif %}
+
+        <a href="{% url 'cart' %}" class="cart-btn">
+          <i class="fa fa-shopping-cart"></i>
+          <span class="cart-count">{{ cart_count }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY BAR -->
+  <div class="nav-bottom">
+    <div class="container">
+      <div style="position: relative;">
+        <button class="category-btn" onclick="toggleCategory()">
+          <i class="fa fa-bars"></i> All Categories
+        </button>
+        <div class="category-menu" id="categoryMenu">
+          <a href="{% url 'store' %}">All Categories</a>
+          {% for category in links %}
+          <a href="{{ category.get_url }}">{{ category.category_name }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <a href="{% url 'store' %}" class="store-link">Store</a>
+    </div>
+  </div>
+
+  <script>
+    function toggleCategory() {
+      const menu = document.getElementById("categoryMenu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    document.addEventListener("click", function (e) {
+      const menu = document.getElementById("categoryMenu");
+      if (!e.target.closest(".category-btn")) {
+        menu.style.display = "none";
+      }
+    });
+  </script>
+</header>

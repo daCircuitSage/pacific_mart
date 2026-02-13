@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- ========================= SECTION CONTENT ========================= -->
+<section class="section-conten padding-y bg-light">
+    {% include "includes/alerts.html" %}
+
+<div class="container">
+    <div class="row">
+        {% include "includes/dashboard_sidebar.html" %}
+        <main class="col-md-9">
+            <article class="card shadow-sm mb-4">
+                <header class="card-header bg-primary text-white">
+                    <strong class="d-inline-block mr-3">Your Order History</strong>
+                </header>
+                <div class="card-body">
+                    {% if orders %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">Order #</th>
+                                    <th scope="col">Billing Name</th>
+                                    <th scope="col">Phone</th>
+                                    <th scope="col">Order Total</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr class="table-border-bottom">
+                                    <th scope="row">
+                                        <a href="{% url 'order_detail' order.order_number %}" class="text-decoration-none text-primary">
+                                            {{ order.order_number }}
+                                        </a>
+                                    </th>
+                                    <td>{{ order.full_name }}</td>
+                                    <td>{{ order.phone }}</td>
+                                    <td>৳ {{ order.order_total }}</td>
+                                    <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        {% if order.status == "Verifying Payment" %}
+                                            <span class="badge bg-warning text-dark">Verifying Payment</span>
+                                        {% elif order.status == "Shipping" %}
+                                            <span class="badge bg-info text-white">Shipping</span>
+                                        {% elif order.status == "Shipped" %}
+                                            <span class="badge bg-success">Shipped</span>
+                                        {% elif order.status == "Cancelled" %}
+                                            <span class="badge bg-danger">Cancelled</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ order.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                        <p class="text-center text-muted mt-4">You have not placed any orders yet.</p>
+                    {% endif %}
+                </div> <!-- card-body -->
+            </article>
+        </main>
+    </div> <!-- row -->
+</div>
+
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
+
+{% endblock content %}

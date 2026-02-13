@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  /* ===== LAYOUT ===== */
+  .pd-wrapper {
+    padding: 32px 16px;
+  }
+
+  .pd-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    padding: 24px;
+  }
+
+  .pd-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  @media (max-width: 768px) {
+    .pd-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ===== IMAGE GALLERY ===== */
+  .pd-main-img {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .pd-main-img img {
+    max-height: 360px;
+    object-fit: contain;
+  }
+
+  .pd-thumbs {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .pd-thumbs img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 4px;
+    cursor: pointer;
+    background: #fff;
+  }
+
+  /* ===== INFO ===== */
+  .pd-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .pd-price {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2563eb;
+    margin: 12px 0;
+  }
+
+  .pd-desc {
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  .pd-select {
+    margin-top: 16px;
+  }
+
+  .pd-select label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .pd-select select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .pd-btn {
+    margin-top: 20px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  /* ===== REVIEW ===== */
+  .review-box {
+    margin-top: 40px;
+  }
+
+  .review-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .review-user {
+    font-weight: 600;
+  }
+
+  .review-date {
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .rate {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
+
+  .rate input {
+    display: none;
+  }
+
+  .rate label {
+    width: 22px;
+    cursor: pointer;
+    font-size: 22px;
+    color: #cbd5e1;
+  }
+
+  .rate label:before {
+    content: "★";
+  }
+
+  .rate input:checked ~ label,
+  .rate label:hover,
+  .rate label:hover ~ label {
+    color: #facc15;
+  }
+
+  .half-star:before {
+    content: "★";
+    position: absolute;
+    width: 50%;
+    overflow: hidden;
+  }
+</style>
+
+<section class="pd-wrapper">
+  <div class="container">
+
+    <!-- PRODUCT CARD -->
+    <div class="pd-card">
+      <div class="pd-grid">
+
+        <!-- IMAGE -->
+        <div>
+          <div class="pd-main-img mainImage">
+            <img src="{{ single_product.product_img.url }}" alt="{{ single_product.product_name }}">
+          </div>
+
+          <div class="pd-thumbs thumb">
+            <a href="{{ single_product.product_img.url }}">
+              <img src="{{ single_product.product_img.url }}">
+            </a>
+            {% for i in product_gallery %}
+            <a href="{{ i.images.url }}">
+              <img src="{{ i.images.url }}">
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- INFO -->
+        <div>
+          <form action="{% url 'add_to_cart' single_product.id %}" method="POST">
+            {% csrf_token %}
+
+            <h1 class="pd-title">{{ single_product.product_name }}</h1>
+
+            <div class="rating-star">
+              <span>
+                <i class="fa fa-star{% if single_product.averageReview < 0.5 %}-o{% elif single_product.averageReview < 1 %}-half-o{% endif %}"></i>
+                <i class="fa fa-star{% if single_product.averageReview < 1.5 %}-o{% elif single_product.averageReview < 2 %}-half-o{% endif %}"></i>
+                <i class="fa fa-star{% if single_product.averageReview < 2.5 %}-o{% elif single_product.averageReview < 3 %}-half-o{% endif %}"></i>
+                <i class="fa fa-star{% if single_product.averageReview < 3.5 %}-o{% elif single_product.averageReview < 4 %}-half-o{% endif %}"></i>
+                <i class="fa fa-star{% if single_product.averageReview < 4.5 %}-o{% elif single_product.averageReview < 5 %}-half-o{% endif %}"></i>
+                <small>({{ single_product.countReviews }} reviews)</small>
+              </span>
+            </div>
+
+            <div class="pd-price">${{ single_product.product_price }}</div>
+
+            <p class="pd-desc">{{ single_product.product_description }}</p>
+
+            <div class="pd-select">
+              <label>Choose Color</label>
+              <select name="color" required>
+                <option value="" disabled selected>Choose Color</option>
+                {% for i in single_product.variation.colors %}
+                <option value="{{ i.variation_value|lower }}">{{ i.variation_value|capfirst }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="pd-select">
+              <label>Select Size</label>
+              <select name="size" required>
+                <option value="" disabled selected>Choose Size</option>
+                {% for i in single_product.variation.sizes %}
+                <option value="{{ i.variation_value|lower }}">{{ i.variation_value|capfirst }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            {% if single_product.stock <= 0 %}
+              <h5 class="mt-3 text-danger">Out of stock</h5>
+            {% else %}
+              <button type="submit" class="pd-btn">
+                <i class="fa fa-shopping-cart"></i> Add to Cart
+              </button>
+            {% endif %}
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- REVIEW FORM -->
+    <div class="review-box">
+      <form action="{% url 'submit_review' single_product.id %}" method="POST">
+        {% csrf_token %}
+
+        <h4>Write your review</h4>
+
+        <div class="rate">
+          <input type="radio" id="r5" name="rating" value="5" required><label for="r5"></label>
+          <input type="radio" id="r4" name="rating" value="4"><label for="r4"></label>
+          <input type="radio" id="r3" name="rating" value="3"><label for="r3"></label>
+          <input type="radio" id="r2" name="rating" value="2"><label for="r2"></label>
+          <input type="radio" id="r1" name="rating" value="1"><label for="r1"></label>
+        </div>
+
+        <input type="text" name="subject" class="form-control mt-2" placeholder="Review title">
+        <textarea name="review" class="form-control mt-2" rows="4" placeholder="Your review"></textarea>
+
+        <br>
+
+        {% if user.is_authenticated %}
+          {% if orderproduct %}
+            <button type="submit" class="pd-btn">Submit Review</button>
+          {% else %}
+            <p>You must purchase this product to post a review</p>
+          {% endif %}
+        {% else %}
+          <p>You must be logged in to post a review.
+            <a href="{% url 'login' %}">Login now</a>
+          </p>
+        {% endif %}
+
+        {% include "includes/alerts.html" %}
+      </form>
+
+      <h4 class="mt-4">Customer Reviews</h4>
+
+      {% for review in reviews %}
+      <div class="review-card">
+        <div class="d-flex justify-content-between">
+          <span class="review-user">{{ review.user.full_name }}</span>
+          <span class="review-date">{{ review.updated_at }}</span>
+        </div>
+
+        <div class="rating-star">
+          <span>
+            <i class="fa fa-star{% if review.rating < 0.5 %}-o{% elif review.rating < 1 %}-half-o{% endif %}"></i>
+            <i class="fa fa-star{% if review.rating < 1.5 %}-o{% elif review.rating < 2 %}-half-o{% endif %}"></i>
+            <i class="fa fa-star{% if review.rating < 2.5 %}-o{% elif review.rating < 3 %}-half-o{% endif %}"></i>
+            <i class="fa fa-star{% if review.rating < 3.5 %}-o{% elif review.rating < 4 %}-half-o{% endif %}"></i>
+            <i class="fa fa-star{% if review.rating < 4.5 %}-o{% elif review.rating < 5 %}-half-o{% endif %}"></i>
+          </span>
+        </div>
+
+        <h6>{{ review.subject }}</h6>
+        <p>{{ review.review }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

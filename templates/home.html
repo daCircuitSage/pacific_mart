@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  /* ===== HERO SECTION ===== */
+  .hero {
+    padding: 24px 16px;
+  }
+
+  .hero-banner {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .hero-banner img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* ===== SECTION HEADER ===== */
+  .section-wrap {
+    padding: 40px 16px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .section-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .section-header a {
+    padding: 8px 16px;
+    border: 1px solid #2563eb;
+    color: #2563eb;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* ===== PRODUCT GRID ===== */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  .product-card {
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.25s ease;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  }
+
+  .product-image {
+    position: relative;
+    padding: 16px;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+  }
+
+  .product-image img {
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .product-info {
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .product-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .product-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2563eb;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 640px) {
+    .section-header h2 {
+      font-size: 20px;
+    }
+
+    .product-image {
+      height: 180px;
+    }
+  }
+</style>
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-banner">
+      <img src="{% static 'images/banners/1.jpg' %}" alt="Main banner">
+    </div>
+  </div>
+</section>
+
+<!-- ===== POPULAR PRODUCTS ===== -->
+<section class="section-wrap">
+  <div class="container">
+
+    <div class="section-header">
+      <h2>Popular Products</h2>
+      <a href="{% url 'store' %}">See all</a>
+    </div>
+
+    <div class="product-grid">
+      {% for product in products %}
+      <div class="product-card">
+        <a href="{{ product.get_url }}" class="product-image">
+          <img src="{{ product.product_img.url }}" alt="{{ product.product_name }}">
+        </a>
+        <div class="product-info">
+          <a href="{{ product.get_url }}" class="product-title">
+            {{ product.product_name }}
+          </a>
+          <div class="product-price">
+            ${{ product.product_price }}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

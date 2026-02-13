@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- ========================= SECTION PAGETOP ========================= -->
+<section class="section-pagetop bg-light py-4">
+  <div class="container">
+    {% if 'search' in request.path %}
+    <h2 class="title-page">Search Results</h2>
+    {% else %}
+    <h2 class="title-page">Our Store</h2>
+    {% endif %}
+  </div>
+</section>
+<!-- ========================= SECTION PAGETOP END ========================= -->
+
+<!-- ========================= SECTION CONTENT ========================= -->
+<section class="section-content py-5">
+  <div class="container">
+
+    <div class="row g-4">
+
+      <!-- SIDEBAR FILTERS -->
+      <aside class="col-md-3">
+
+        <div class="card mb-4">
+          <!-- Categories -->
+          <article class="filter-group">
+            <header class="card-header">
+              <h6 class="title mb-0">Categories</h6>
+            </header>
+            <div class="filter-content">
+              <ul class="list-unstyled p-3 mb-0">
+                <li><a href="{% url 'store' %}">All Products</a></li>
+                {% for category in links %}
+                <li><a href="{{ category.get_url }}">{{ category.category_name }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+          </article>
+
+          {% comment %} <!-- Sizes -->
+          <article class="filter-group mt-3">
+            <header class="card-header">
+              <h6 class="title mb-0">Sizes</h6>
+            </header>
+            <div class="filter-content p-3">
+              <label class="checkbox-btn me-2 mb-2">
+                <input type="checkbox"> <span class="btn btn-light btn-sm">XS</span>
+              </label>
+              <label class="checkbox-btn me-2 mb-2">
+                <input type="checkbox"> <span class="btn btn-light btn-sm">SM</span>
+              </label>
+              <label class="checkbox-btn me-2 mb-2">
+                <input type="checkbox"> <span class="btn btn-light btn-sm">LG</span>
+              </label>
+              <label class="checkbox-btn me-2 mb-2">
+                <input type="checkbox"> <span class="btn btn-light btn-sm">XXL</span>
+              </label>
+            </div>
+          </article>
+
+          <!-- Price -->
+          <article class="filter-group mt-3">
+            <header class="card-header">
+              <h6 class="title mb-0">Price range</h6>
+            </header>
+            <div class="filter-content p-3">
+              <div class="row g-2 mb-2">
+                <div class="col-6">
+                  <select class="form-select form-select-sm">
+                    <option value="0">$0</option>
+                    <option value="50">$50</option>
+                    <option value="100">$100</option>
+                    <option value="150">$150</option>
+                    <option value="200">$200</option>
+                    <option value="500">$500</option>
+                    <option value="1000">$1000</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <select class="form-select form-select-sm">
+                    <option value="50">$50</option>
+                    <option value="100">$100</option>
+                    <option value="150">$150</option>
+                    <option value="200">$200</option>
+                    <option value="500">$500</option>
+                    <option value="1000">$1000</option>
+                    <option value="2000">$2000+</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn-primary w-100 btn-sm">Apply</button>
+            </div>
+          </article> {% endcomment %}
+
+        </div>
+      </aside>
+
+      <!-- PRODUCT GRID -->
+      <main class="col-md-9">
+
+        <header class="d-flex justify-content-between align-items-center mb-4">
+          <span>There are <b>{{ product_count }}</b> items found</span>
+        </header>
+
+        <div class="row g-4">
+          {% for product in products %}
+          <div class="col-md-4">
+            <div class="card card-product-grid h-100">
+              <div class="img-wrap">
+                <a href="{{ product.get_url }}"><img src="{{ product.product_img.url }}" class="card-img-top" style="height:220px; object-fit:cover;"></a>
+              </div>
+              <div class="card-body p-3 d-flex flex-column">
+                <h6 class="card-title mb-2"><a href="{{ product.get_url }}" class="text-dark">{{ product.product_name }}</a></h6>
+                <div class="price-wrap mb-3">
+                  <span class="fw-bold">${{ product.product_price }}</span>
+                </div>
+                <a href="{{ product.get_url }}" class="btn btn-primary btn-sm mt-auto">Details</a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- PAGINATION -->
+        <nav class="mt-4">
+          {% if products.has_other_pages %}
+          <ul class="pagination justify-content-center">
+            {% if products.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a></li>
+            {% else %}
+            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+            {% endif %}
+
+            {% for i in products.paginator.page_range %}
+              {% if products.number == i %}
+              <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+              {% else %}
+              <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+              {% endif %}
+            {% endfor %}
+
+            {% if products.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}">Next</a></li>
+            {% else %}
+            <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+            {% endif %}
+          </ul>
+          {% endif %}
+        </nav>
+
+      </main>
+
+    </div>
+  </div>
+</section>
+<!-- ========================= SECTION CONTENT END ========================= -->
+
+{% endblock %}
