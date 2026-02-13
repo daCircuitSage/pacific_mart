@@ -4,6 +4,7 @@ from django.db.models import Avg, Count
 from category.models import Category
 from accounts.models import Account
 from django.urls import reverse
+from cloudinary.models import CloudinaryField
 
 
 class Product(models.Model):
@@ -11,7 +12,7 @@ class Product(models.Model):
     product_slug = models.SlugField(max_length=200, unique=True)
     product_description = models.TextField()
     product_price = models.DecimalField(max_digits=8, decimal_places=2)
-    product_img = models.ImageField(upload_to='photos/products')
+    product_img = CloudinaryField('product_image')
     stock = models.IntegerField()
     is_available = models.BooleanField(default=True)
     product_category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -54,7 +55,7 @@ product_veriation_choices = (
 
 class Variation(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variation')
-    variation_category = models.CharField(choices=product_veriation_choices)
+    variation_category = models.CharField(max_length=20, choices=product_veriation_choices)
     variation_value = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=True)
@@ -83,7 +84,7 @@ class ReviewRating(models.Model):
 
 class ProductGallery(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, default=None)
-    images = models.ImageField(upload_to='store/products', max_length=255)
+    images = CloudinaryField('gallery_image')
 
 
     def __str__(self):

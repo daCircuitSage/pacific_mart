@@ -10,7 +10,7 @@ services:
     name: thepacificmart
     runtime: python
     buildCommand: './build.sh'
-    startCommand: 'python -m gunicorn swiftgo.asgi:application -k uvicorn.workers.UvicornWorker'
+    startCommand: 'python -m gunicorn factors_Ecom.asgi:application -k uvicorn.workers.UvicornWorker'
  
  
  

@@ -28,7 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -45,6 +45,9 @@ INSTALLED_APPS = [
     'product',
     'cart',
     'orders',
+    'bkash',
+    'nagad',
+    'cashOnDelevery',
     'widget_tweaks',
     'cloudinary',
     'cloudinary_storage',
@@ -52,6 +55,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -146,8 +150,8 @@ STATICFILES_DIRS = [
     'factors_Ecom/static',
 ]
 
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = BASE_DIR/'media'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR/'media'
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 CLOUDINARY_STORAGE = {
@@ -156,15 +160,16 @@ CLOUDINARY_STORAGE = {
     'API_SECRET':config('CLOUDINARY_API_SECRET')
 }
 
+# WhiteNoise Configuration for efficient static file serving
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Django 4.0+ style
-CSRF_TRUSTED_ORIGINS = [
-    "https://elda-craglike-uncolourably.ngrok-free.dev",
-]
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='').split(',') if config('CSRF_TRUSTED_ORIGINS', default='') else []
 
 
 from django.contrib.messages import constants as messages
