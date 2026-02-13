@@ -26,9 +26,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=True, cast=bool)  # Default to True for development
 
-ALLOWED_HOSTS = ['*']
+# Dynamic ALLOWED_HOSTS for both development and production
+if DEBUG:
+    # Development: Allow localhost variants
+    ALLOWED_HOSTS = ['*']  # Safe in DEBUG mode
+else:
+    # Production: Strict host checking
+    allowed_hosts_str = config('ALLOWED_HOSTS', default='localhost,127.0.0.1')
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(',')]
 
 
 # Application definition
@@ -168,8 +175,23 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Django 4.0+ style
+# ===== SESSION CONFIGURATION =====
+# Use database sessions for production reliability
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = not DEBUG  # HTTPS only in production
+SESSION_SAVE_EVERY_REQUEST = False
+
+# ===== CSRF CONFIGURATION =====
+CSRF_COOKIE_SECURE = not DEBUG  # HTTPS only in production
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_AGE = 31449600  # 1 year
 CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='').split(',') if config('CSRF_TRUSTED_ORIGINS', default='') else []
+# Add Render domain automatically if using Render
+if not DEBUG and ALLOWED_HOSTS:
+    # For Render apps like 'myapp-abc123.onrender.com'
+    CSRF_TRUSTED_ORIGINS.extend([f'https://{host}' for host in ALLOWED_HOSTS if 'localhost' not in host])
 
 
 from django.contrib.messages import constants as messages

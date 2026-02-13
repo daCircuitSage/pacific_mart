@@ -39,7 +39,7 @@ def register(request):
             #creating user prfile ==========>
             profile = UserProfile()
             profile.user_id = user.id
-            profile.profile_picture ='default/images.png'
+            # Don't set default profile_picture - let Cloudinary handle it with blank=True, null=True
             profile.save()
 
             #User verification process------>
