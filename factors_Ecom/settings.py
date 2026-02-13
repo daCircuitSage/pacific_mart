@@ -30,12 +30,25 @@ DEBUG = config('DEBUG', default=True, cast=bool)  # Default to True for developm
 
 # Dynamic ALLOWED_HOSTS for both development and production
 if DEBUG:
-    # Development: Allow localhost variants
-    ALLOWED_HOSTS = ['*']  # Safe in DEBUG mode
+    # Development: Allow all hosts (safe while DEBUG=True locally)
+    ALLOWED_HOSTS = ['*']
 else:
     # Production: Strict host checking
+    # Read comma-separated list from environment and be tolerant:
+    # - allow values with or without leading 'www.'
+    # - trim whitespace and ignore empty entries
     allowed_hosts_str = config('ALLOWED_HOSTS', default='localhost,127.0.0.1')
-    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(',')]
+    raw_hosts = [h.strip() for h in allowed_hosts_str.split(',') if h.strip()]
+    hosts = set()
+    for h in raw_hosts:
+        # add provided host
+        hosts.add(h)
+        # also add the counterpart (with or without www)
+        if h.startswith('www.'):
+            hosts.add(h[4:])
+        else:
+            hosts.add('www.' + h)
+    ALLOWED_HOSTS = sorted(hosts)
 
 
 # Application definition
