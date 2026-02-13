@@ -1,1 +1,27 @@
+<<<<<<< HEAD
 .env
+=======
+
+__pycache__/
+*.pyc
+*.pyo
+
+
+env/
+envEcom/
+venv/
+
+
+.env
+
+*.log
+db.sqlite3
+media/
+
+
+staticfiles/
+
+
+.DS_Store
+Thumbs.db
+>>>>>>> 8e2a240fc2af7d29b93cb226c2960efd74fa71ee
