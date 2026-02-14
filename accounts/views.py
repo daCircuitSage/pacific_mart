@@ -12,6 +12,8 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
+from decouple import config
+from django.conf import settings
 import requests
 import logging
 from django.conf import settings
@@ -43,7 +45,10 @@ def register(request):
             # Verification email
             email_sent = False
             try:
-                current_site = get_current_site(request)
+                # Get domain from request instead of sites framework
+                domain = request.get_host()
+                protocol = 'https' if not settings.DEBUG else 'http'
+                
                 mail_subject = 'Please activate your account'
                 message = render_to_string('accounts/account_verification_email.html', {
                     'user': user,
@@ -66,10 +71,14 @@ def register(request):
                 send_email.send(fail_silently=False)  # false throws error
                 email_sent = True
                 
+                # Log successful email
+                logger.info(f"Verification email sent successfully to {email}")
+                
             except Exception as e:
                 # Log error but don't fail registration
                 logger = logging.getLogger(__name__)
                 logger.error(f"Email sending failed for {email}: {str(e)}")
+                logger.error(f"Email settings: HOST={config('EMAIL_HOST')}, USER={config('EMAIL_HOST_USER')}")
                 email_sent = False
 
             # Always redirect, even if email fails

@@ -30,6 +30,13 @@ if [ $? -ne 0 ]; then
 fi
 
 echo ""
+echo "========== Creating Superuser =========="
+python manage.py create_superuser_if_not_exists
+if [ $? -ne 0 ]; then
+    echo "WARNING: Superuser creation failed, but continuing..."
+fi
+
+echo ""
 echo "========== Collecting Static Files =========="
 python manage.py collectstatic --no-input
 if [ $? -ne 0 ]; then
