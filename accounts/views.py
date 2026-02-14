@@ -11,6 +11,7 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
+from decouple import config
 import requests
 import logging
 
@@ -58,13 +59,17 @@ def register(request):
                     from_email=None
                 )
                 send_email.content_subtype = "html"
-                send_email.send(fail_silently=True)  # Changed to fail_silently=True
+                send_email.send(fail_silently=False)  # Don't fail silently to see actual errors
                 email_sent = True
+                
+                # Log successful email
+                logger.info(f"Verification email sent successfully to {email}")
                 
             except Exception as e:
                 # Log error but don't fail registration
                 logger = logging.getLogger(__name__)
                 logger.error(f"Email sending failed for {email}: {str(e)}")
+                logger.error(f"Email settings: HOST={config('EMAIL_HOST')}, USER={config('EMAIL_HOST_USER')}")
                 email_sent = False
 
             # Always redirect, even if email fails

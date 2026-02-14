@@ -176,10 +176,6 @@ EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
 # Email timeout settings for Render
 EMAIL_TIMEOUT = 10  # 10 seconds timeout
 
-# Email fallback for development and when email is not configured
-if DEBUG or not EMAIL_HOST_USER:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 # ================= MESSAGE TAGS =================
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {messages.ERROR: "danger"}
