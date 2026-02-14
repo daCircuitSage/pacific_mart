@@ -14,6 +14,7 @@ media/
 envEcom/
 venv/
 
+.env.render
 
 .env
 

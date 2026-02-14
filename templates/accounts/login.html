@@ -5,19 +5,23 @@
 <section class="section-content padding-y d-flex align-items-center justify-content-center" style="min-height:84vh;">
 
     {% if request.GET.command == 'verification' %}
-    <div class="container text-center alert {{ 'alert-success' if request.GET.email_sent == 'True' else 'alert-warning' }}" role="alert" style="max-width: 500px;">
-        {% if request.GET.email_sent == 'True' %}
+    {% if request.GET.email_sent == 'True' %}
+        <div class="container text-center alert alert-success" role="alert" style="max-width: 500px;">
             ✅ Thank you for registering! A verification email has been sent to <strong>{{ request.GET.email }}</strong>.
             <br><br>
             Please check your inbox and click the verification link to activate your account.
-        {% else %}
+            <br><br>
+            Already verified? <a href="{% url 'login' %}">Login</a>
+        </div>
+    {% else %}
+        <div class="container text-center alert alert-warning" role="alert" style="max-width: 500px;">
             ⚠️ Registration successful! However, we couldn't send the verification email to <strong>{{ request.GET.email }}</strong>.
             <br><br>
             Please contact support or try registering again.
-        {% endif %}
-        <br><br>
-        Already verified? <a href="{% url 'login' %}">Login</a>
-    </div>
+            <br><br>
+            Already verified? <a href="{% url 'login' %}">Login</a>
+        </div>
+    {% endif %}
 
     {% else %}
     <div class="card shadow-sm" style="max-width: 400px; width:100%;">
