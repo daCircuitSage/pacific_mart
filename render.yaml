@@ -27,3 +27,15 @@ services:
         value: "https://pacific-mart.onrender.com"
       - key: WEB_CONCURRENCY
         value: "1"
+      - key: EMAIL_HOST
+        value: "smtp.gmail.com"
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_HOST_USER
+        value: "shihabthebrowncrow@gmail.com"
+      - key: EMAIL_HOST_PASSWORD
+        generateValue: true
+      - key: EMAIL_USE_TLS
+        value: "True"
+      - key: EMAIL_USE_SSL
+        value: "False"
