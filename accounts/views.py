@@ -80,13 +80,18 @@ def login(request):
         user = auth.authenticate(email=email, password=password)
 
         if user is not None:
-            session_key_before = _cart_id(request)
-            auth.login(request, user)
-            merge_carts(user, session_key_before)
+            # Check if user is active
+            if user.is_active:
+                session_key_before = _cart_id(request)
+                auth.login(request, user)
+                merge_carts(user, session_key_before)
 
-            url = request.GET.get('next') or 'dashboard'
-            messages.success(request, 'You are now logged in.')
-            return redirect(url)
+                url = request.GET.get('next') or 'dashboard'
+                messages.success(request, 'You are now logged in.')
+                return redirect(url)
+            else:
+                messages.error(request, 'Please verify your email address before logging in.')
+                return redirect('login')
         else:
             messages.error(request, 'Invalid login credentials')
             return redirect('login')
