@@ -35,7 +35,9 @@
 
                             <!-- Button -->
                             <p style="text-align:center; margin:30px 0;">
-                                <a href="{{ protocol }}://{{ domain }}{% url 'activate' uidb64=uid token=token %}"
+                                <!-- use -->
+                                <!-- <a href="https://{{domain}}{% url 'activate' uidb64=uid token=token %}" -->
+                                <a href="{% if '127.0.0.1' in domain or 'localhost' in domain %}http://{% else %}https://{% endif %}{{domain}}{% url 'activate' uidb64=uid token=token %}"
                                    style="background-color:#0d6efd; color:#ffffff; padding:14px 28px;
                                    text-decoration:none; border-radius:5px; font-size:16px; display:inline-block;">
                                     Verify My Account
@@ -47,7 +49,8 @@
                             </p>
 
                             <p style="font-size:13px; background:#f1f1f1; padding:10px; border-radius:4px; word-break:break-all;">
-                                {{ protocol }}://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+                                <!-- https://{{domain}}{% url 'activate' uidb64=uid token=token %} -->                                    
+                                {% if '127.0.0.1' in domain or 'localhost' in domain %}http://{% else %}https://{% endif %}{{domain}}{% url 'activate' uidb64=uid token=token %}
                             </p>
 
                             <p style="font-size:14px; color:#777777; margin-top:25px;">

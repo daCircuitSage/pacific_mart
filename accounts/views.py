@@ -1,3 +1,4 @@
+from django.db.models import F
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .forms import RegistrationForm, UserForm, UserProfileForm
@@ -15,6 +16,7 @@ from decouple import config
 from django.conf import settings
 import requests
 import logging
+from django.conf import settings
 
 def register(request):
     if request.method == 'POST':
@@ -54,8 +56,8 @@ def register(request):
                 mail_subject = 'Please activate your account'
                 message = render_to_string('accounts/account_verification_email.html', {
                     'user': user,
-                    'domain': domain,
-                    'protocol': protocol,
+                    # 'domain': current_site.domain,
+                    'domain': request.get_host(),  # This gives 127.0.0.1:8000 or your domain
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': default_token_generator.make_token(user)
                 })
@@ -65,15 +67,12 @@ def register(request):
                     mail_subject, 
                     message, 
                     to=[email],
-                    from_email=None
+                    # from_email=None
+                    from_email=settings.EMAIL_HOST_USER
                 )
                 send_email.content_subtype = "html"
-                
-                # Debug: Before sending
-                logger.info(f"Attempting to send email to {email}")
-                result = send_email.send(fail_silently=False)
-                logger.info(f"Email send result: {result}")
-                
+                # send_email.send(fail_silently=True)  # Changed to fail_silently=True
+                send_email.send(fail_silently=False)  # false throws error
                 email_sent = True
                 
                 # Log successful email
