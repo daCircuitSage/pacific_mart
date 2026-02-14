@@ -45,6 +45,10 @@ def register(request):
             # Verification email
             email_sent = False
             try:
+                # Debug: Print email settings (without password)
+                logger.info(f"Email configuration - HOST: {config('EMAIL_HOST')}, PORT: {config('EMAIL_PORT')}, USER: {config('EMAIL_HOST_USER')}")
+                logger.info(f"EMAIL_HOST_PASSWORD exists: {bool(config('EMAIL_HOST_PASSWORD', default=''))}")
+                
                 # Get domain from request instead of sites framework
                 domain = request.get_host()
                 protocol = 'https' if not settings.DEBUG else 'http'
@@ -79,6 +83,8 @@ def register(request):
                 logger = logging.getLogger(__name__)
                 logger.error(f"Email sending failed for {email}: {str(e)}")
                 logger.error(f"Email settings: HOST={config('EMAIL_HOST')}, USER={config('EMAIL_HOST_USER')}")
+                logger.error(f"EMAIL_HOST_PASSWORD exists: {bool(config('EMAIL_HOST_PASSWORD', default=''))}")
+                logger.error(f"Full exception: {type(e).__name__}: {e}")
                 email_sent = False
 
             # Always redirect, even if email fails
