@@ -89,7 +89,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'factors_Ecom.wsgi.application'
 
 # ================= DATABASE =================
-if 'DATABASE_URL' in os.environ:
+# Check if we're in production (Render) by checking for Render-specific environment variables
+IS_RENDER = 'RENDER_SERVICE_ID' in os.environ or 'RENDER' in os.environ.get('PYTHONPATH', '')
+
+if IS_RENDER and 'DATABASE_URL' in os.environ:
     # Production: Use PostgreSQL from Render
     DATABASES = {
         'default': dj_database_url.config(
@@ -99,21 +102,13 @@ if 'DATABASE_URL' in os.environ:
         )
     }
 else:
-    # Development: Fallback to SQLite
+    # Development: Use SQLite
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
-# Additional database options for PostgreSQL
-if 'postgresql' in config('DATABASE_URL', default=''):
-    DATABASES['default'].update({
-        'OPTIONS': {
-            'sslmode': 'require',
-        }
-    })
 
 # ================= AUTH =================
 AUTH_USER_MODEL = 'accounts.Account'
