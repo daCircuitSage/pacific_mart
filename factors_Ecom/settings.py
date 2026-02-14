@@ -1,5 +1,4 @@
 from pathlib import Path
-import os
 from decouple import config
 import dj_database_url
 import cloudinary
@@ -12,20 +11,8 @@ SECRET_KEY = config('SECRET_KEY', default='unsafe-secret-key')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 # ================= HOST & CSRF =================
-if DEBUG:
-    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-    CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1', 'http://localhost']
-else:
-    ALLOWED_HOSTS = [
-        'pacific-mart.onrender.com',
-        '.onrender.com',
-        'localhost',
-        '127.0.0.1',
-    ]
-    CSRF_TRUSTED_ORIGINS = [
-        'https://pacific-mart.onrender.com',
-        'https://*.onrender.com',
-    ]
+ALLOWED_HOSTS = [host.strip() for host in config('ALLOWED_HOSTS', default='').split(',')]
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in config('CSRF_TRUSTED_ORIGINS', default='').split(',')]
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -93,14 +80,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'factors_Ecom.wsgi.application'
 
 # ================= DATABASE =================
-DATABASE_URL = config(
-    'DATABASE_URL',
-    default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
-)
-
 DATABASES = {
     'default': dj_database_url.parse(
-        DATABASE_URL,
+        config('DATABASE_URL'),
         conn_max_age=600,
         ssl_require=not DEBUG
     )
@@ -160,12 +142,13 @@ CSRF_COOKIE_AGE = 31449600
 CSRF_COOKIE_SAMESITE = 'Lax'
 
 # ================= EMAIL =================
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = config('EMAIL_BACKEND')
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT', cast=int)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+EMAIL_USE_SSL = config('EMAIL_USE_SSL', cast=bool)
 
 # ================= MESSAGE TAGS =================
 from django.contrib.messages import constants as messages
