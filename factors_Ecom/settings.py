@@ -6,13 +6,20 @@ import cloudinary
 # ================= BASE =================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ================= SITE CONFIGURATION =================
+SITE_ID = 1
+
 # ================= SECURITY =================
 SECRET_KEY = config('SECRET_KEY', default='unsafe-secret-key')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 # ================= HOST & CSRF =================
-ALLOWED_HOSTS = [host.strip() for host in config('ALLOWED_HOSTS', default='').split(',')]
-CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in config('CSRF_TRUSTED_ORIGINS', default='').split(',')]
+ALLOWED_HOSTS = [host.strip() for host in config('ALLOWED_HOSTS', default='').split(',') if host.strip()]
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in config('CSRF_TRUSTED_ORIGINS', default='').split(',') if origin.strip()]
+
+# Add default trusted origins for production
+if not DEBUG and not CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -26,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # Required for get_current_site()
 
     # custom apps
     'category',
@@ -82,11 +90,19 @@ WSGI_APPLICATION = 'factors_Ecom.wsgi.application'
 # ================= DATABASE =================
 DATABASES = {
     'default': dj_database_url.parse(
-        config('DATABASE_URL'),
+        config('DATABASE_URL', default='sqlite:///' + str(BASE_DIR / 'db.sqlite3')),
         conn_max_age=600,
-        ssl_require=not DEBUG
+        ssl_require=True  # Always require SSL for production databases
     )
 }
+
+# Additional database options for PostgreSQL
+if 'postgresql' in config('DATABASE_URL', default=''):
+    DATABASES['default'].update({
+        'OPTIONS': {
+            'sslmode': 'require',
+        }
+    })
 
 # ================= AUTH =================
 AUTH_USER_MODEL = 'accounts.Account'
@@ -113,6 +129,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ================= MEDIA (Cloudinary) =================
 MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'  # Required for development fallback
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CLOUDINARY_STORAGE = {
@@ -142,13 +159,17 @@ CSRF_COOKIE_AGE = 31449600
 CSRF_COOKIE_SAMESITE = 'Lax'
 
 # ================= EMAIL =================
-EMAIL_BACKEND = config('EMAIL_BACKEND')
-EMAIL_HOST = config('EMAIL_HOST')
-EMAIL_PORT = config('EMAIL_PORT', cast=int)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
-EMAIL_USE_SSL = config('EMAIL_USE_SSL', cast=bool)
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
+
+# Email fallback for development
+if DEBUG and not EMAIL_HOST_USER:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # ================= MESSAGE TAGS =================
 from django.contrib.messages import constants as messages
