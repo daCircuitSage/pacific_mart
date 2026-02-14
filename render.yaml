@@ -33,8 +33,6 @@ services:
         value: "587"
       - key: EMAIL_HOST_USER
         value: "shihabthebrowncrow@gmail.com"
-      - key: EMAIL_HOST_PASSWORD
-        generateValue: true
       - key: EMAIL_USE_TLS
         value: "True"
       - key: EMAIL_USE_SSL
