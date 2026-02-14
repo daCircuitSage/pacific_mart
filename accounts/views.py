@@ -38,6 +38,7 @@ def register(request):
             profile.save()
 
             # Verification email
+            email_sent = False
             try:
                 current_site = get_current_site(request)
                 mail_subject = 'Please activate your account'
@@ -47,13 +48,22 @@ def register(request):
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': default_token_generator.make_token(user)
                 })
-                send_email = EmailMessage(mail_subject, message, to=[email])
+                
+                # Set timeout for email sending
+                send_email = EmailMessage(
+                    mail_subject, 
+                    message, 
+                    to=[email],
+                    from_email=None  # Use default from settings
+                )
                 send_email.content_subtype = "html"
-                send_email.send()
+                send_email.send(fail_silently=False)
                 email_sent = True
+                
             except Exception as e:
-                # Log the error but don't fail registration
-                print(f"Email sending failed: {e}")
+                # Log the error but don't fail the registration
+                logger = logging.getLogger(__name__)
+                logger.error(f"Email sending failed for {email}: {str(e)}")
                 email_sent = False
 
             return redirect('/accounts/login/?command=verification&email=' + email + '&email_sent=' + str(email_sent))

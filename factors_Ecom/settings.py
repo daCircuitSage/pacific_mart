@@ -167,6 +167,9 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
 
+# Email timeout settings for Render
+EMAIL_TIMEOUT = 10  # 10 seconds timeout
+
 # Email fallback for development and when email is not configured
 if DEBUG or not EMAIL_HOST_USER:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

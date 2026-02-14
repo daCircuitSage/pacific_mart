@@ -1,8 +1,8 @@
 databases:
-  - name: thepacificmart-db   # Render internal name
+  - name: thepacificmart-db
     plan: free
-    databaseName: thepacificmart  # Actual PostgreSQL database name
-    user: thepacificmart          # DB username
+    databaseName: thepacificmart
+    user: thepacificmart
 
 services:
   - type: web
@@ -10,7 +10,7 @@ services:
     name: thepacificmart
     runtime: python
     buildCommand: './build.sh'
-    startCommand: 'python -m gunicorn factors_Ecom.wsgi:application'
+    startCommand: 'python -m gunicorn factors_Ecom.wsgi:application --timeout 30 --workers 1 --max-requests 1000 --max-requests-jitter 50'
     
     envVars:
       - key: DATABASE_URL
@@ -20,10 +20,10 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
-        value: False
+        value: "False"
       - key: ALLOWED_HOSTS
-        value: thepacificmart.onrender.com,localhost,127.0.0.1
+        value: "pacific-mart.onrender.com,localhost,127.0.0.1"
       - key: CSRF_TRUSTED_ORIGINS
-        value: https://thepacificmart.onrender.com
+        value: "https://pacific-mart.onrender.com"
       - key: WEB_CONCURRENCY
-        value: 1
+        value: "1"
