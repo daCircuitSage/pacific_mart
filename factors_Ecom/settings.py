@@ -280,3 +280,6 @@ MESSAGE_TAGS = {
 # ================= DEFAULT =================
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ================= URL SLASH =================
+APPEND_SLASH = True
