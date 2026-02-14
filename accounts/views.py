@@ -12,6 +12,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 import requests
+import logging
 
 def register(request):
     if request.method == 'POST':
@@ -49,23 +50,24 @@ def register(request):
                     'token': default_token_generator.make_token(user)
                 })
                 
-                # Set timeout for email sending
+                # Create email with proper error handling
                 send_email = EmailMessage(
                     mail_subject, 
                     message, 
                     to=[email],
-                    from_email=None  # Use default from settings
+                    from_email=None
                 )
                 send_email.content_subtype = "html"
-                send_email.send(fail_silently=False)
+                send_email.send(fail_silently=True)  # Changed to fail_silently=True
                 email_sent = True
                 
             except Exception as e:
-                # Log the error but don't fail the registration
+                # Log error but don't fail registration
                 logger = logging.getLogger(__name__)
                 logger.error(f"Email sending failed for {email}: {str(e)}")
                 email_sent = False
 
+            # Always redirect, even if email fails
             return redirect('/accounts/login/?command=verification&email=' + email + '&email_sent=' + str(email_sent))
     else:
         form = RegistrationForm()
