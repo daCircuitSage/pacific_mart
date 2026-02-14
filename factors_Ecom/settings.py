@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 from decouple import config
 import dj_database_url
 import cloudinary
@@ -88,13 +89,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'factors_Ecom.wsgi.application'
 
 # ================= DATABASE =================
-DATABASES = {
-    'default': dj_database_url.parse(
-        config('DATABASE_URL', default='sqlite:///' + str(BASE_DIR / 'db.sqlite3')),
-        conn_max_age=600,
-        ssl_require=True  # Always require SSL for production databases
-    )
-}
+if 'DATABASE_URL' in os.environ:
+    # Production: Use PostgreSQL from Render
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=config('DATABASE_URL'),
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
+else:
+    # Development: Fallback to SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Additional database options for PostgreSQL
 if 'postgresql' in config('DATABASE_URL', default=''):
