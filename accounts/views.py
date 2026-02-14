@@ -12,6 +12,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from decouple import config
+from django.conf import settings
 import requests
 import logging
 
@@ -42,11 +43,15 @@ def register(request):
             # Verification email
             email_sent = False
             try:
-                current_site = get_current_site(request)
+                # Get domain from request instead of sites framework
+                domain = request.get_host()
+                protocol = 'https' if not settings.DEBUG else 'http'
+                
                 mail_subject = 'Please activate your account'
                 message = render_to_string('accounts/account_verification_email.html', {
                     'user': user,
-                    'domain': current_site.domain,
+                    'domain': domain,
+                    'protocol': protocol,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': default_token_generator.make_token(user)
                 })
