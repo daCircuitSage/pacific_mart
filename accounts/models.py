@@ -50,7 +50,7 @@ class Account(AbstractUser):
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
     is_admin = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)  # Allow login immediately after registration
+    is_active = models.BooleanField(default=False)  # Require email verification
     is_staff = models.BooleanField(default=False)
     is_superadmin = models.BooleanField(default=False)
 

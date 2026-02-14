@@ -38,19 +38,25 @@ def register(request):
             profile.save()
 
             # Verification email
-            current_site = get_current_site(request)
-            mail_subject = 'Please activate your account'
-            message = render_to_string('accounts/account_verification_email.html', {
-                'user': user,
-                'domain': current_site,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': default_token_generator.make_token(user)
-            })
-            send_email = EmailMessage(mail_subject, message, to=[email])
-            send_email.content_subtype = "html"
-            send_email.send()
+            try:
+                current_site = get_current_site(request)
+                mail_subject = 'Please activate your account'
+                message = render_to_string('accounts/account_verification_email.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': default_token_generator.make_token(user)
+                })
+                send_email = EmailMessage(mail_subject, message, to=[email])
+                send_email.content_subtype = "html"
+                send_email.send()
+                email_sent = True
+            except Exception as e:
+                # Log the error but don't fail registration
+                print(f"Email sending failed: {e}")
+                email_sent = False
 
-            return redirect('/accounts/login/?command=verification&email=' + email)
+            return redirect('/accounts/login/?command=verification&email=' + email + '&email_sent=' + str(email_sent))
     else:
         form = RegistrationForm()
     return render(request, 'accounts/register.html', {'form': form})

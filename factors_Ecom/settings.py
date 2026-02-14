@@ -167,8 +167,8 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
 
-# Email fallback for development
-if DEBUG and not EMAIL_HOST_USER:
+# Email fallback for development and when email is not configured
+if DEBUG or not EMAIL_HOST_USER:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # ================= MESSAGE TAGS =================
